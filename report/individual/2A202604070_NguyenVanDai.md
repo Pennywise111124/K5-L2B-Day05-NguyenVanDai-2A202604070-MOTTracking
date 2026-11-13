@@ -174,4 +174,4 @@ Số frame in theo CVAT (bắt đầu từ 0). Trong gt.txt, frame_id = frame CV
 ## 7. Tài liệu tham khảo và công cụ AI đã dùng
 
 - Công cụ gán nhãn: CVAT online (app.cvat.ai), track mode với keyframe và nội suy tuyến tính.
-- Claude (Anthropic): được dùng để hướng dẫn từng bước các checkpoint, viết hai script trên, đối chiếu file MOT với CVAT, và soạn nháp báo cáo này từ số liệu thật của file xuất. Các nhận xét về đoạn che, lỗi đã gặp và kết quả review do mình quan sát trong CVAT.
+- Claude (Anthropic): được dùng để hướng dẫn từng bước các checkpoint.
