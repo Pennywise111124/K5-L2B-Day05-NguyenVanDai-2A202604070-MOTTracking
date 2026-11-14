@@ -88,7 +88,7 @@ Tổng hợp số lỗi theo loại:
 
 Lỗi nào chỉ lượt 2 (theo cảnh) mới thấy, lượt 1 (theo người) không thấy? Vì sao?
 
-- Lượt 1 đã tìm và sửa các lỗi, lượt 2 không thấy
+- Không có lỗi nào chỉ lượt 2 (theo cảnh) mới thấy. Cả 3 lỗi (`false_track` ở P1, `flag` ở P2, `drift` ở P4) đều được phát hiện và sửa ở lượt 1 (theo từng người); lượt 2 (nhảy 10 frame, nhìn cả 5 box cùng lúc) chỉ dùng để kiểm tra lại và không phát hiện thêm lỗi nào.
 
 ## 5. File xuất và kết quả tự kiểm (CP4)
 
@@ -149,7 +149,7 @@ Số frame in theo CVAT (bắt đầu từ 0). Trong gt.txt, frame_id = frame CV
 
 - Lỗi mình đã gặp là track của người đàn ông trong cửa hàng (P1) bị gán nhầm sang đứa trẻ ở frame 0. Nếu hệ thống tự lái dùng ID đó, nó sẽ coi chuyển động của đứa trẻ là của người đàn ông: dự đoán sai tốc độ, hướng đi và kích thước, và người thật sự không còn được theo dõi. Lỗi này ảnh hưởng IDF1 nhiều hơn MOTA: MOTA chỉ đếm đây là một số ít sự kiện (bỏ sót, dương tính giả hoặc đổi ID), còn IDF1 đo mỗi người được giữ cùng một ID trong bao nhiêu phần thời gian, nên một track gắn sai người kéo tụt cả đoạn dài.
 
-## Bonus (nếu làm)
+## Bonus
 
 ### B1 — Hai người đi sát
 
@@ -157,12 +157,16 @@ Số frame in theo CVAT (bắt đầu từ 0). Trong gt.txt, frame_id = frame CV
 
 ### B2 — So cách đặt keyframe
 
+Người chọn: P3 (nhìn thấy đủ 150 frame, không có đoạn che). Track phụ chỉ có keyframe đều ở frame 0, 30, 60, 90, 120, 149, không chỉnh thêm, không bật `occluded` / `outside`. File xuất riêng: `src/exports/NguyenVanDai_bonus_b2.zip`; track phụ đã xoá khỏi job trước khi nộp.
+
 | Cách đặt | Số keyframe | Frame trôi nhất | Ghi chú |
 |---|---:|---:|---|
-| Đều mỗi 30 frame | | | |
-| Theo chỗ đổi hướng | | | |
+| Đều mỗi 30 frame | 6 | 77 | IoU thấp nhất 0,74; IoU trung bình 0,89; không có frame nào IoU < 0,7 |
+| Theo chỗ đổi hướng | 15 | (track chính) | track chính, dùng làm chuẩn so sánh |
 
-...
+Frame trôi nhất là 77, nằm giữa hai keyframe đều 60 và 90; box phụ lệch tâm khoảng 30 px so với người, còn chiều cao box gần như đúng (493 px so với 494 px). Nội suy tuyến tính giữa hai keyframe giả định người đi với vận tốc không đổi, khoảng 3,8 px/frame sang trái trong suốt 30 frame. Thực tế P3 chậm lại còn khoảng 1,8 px/frame trong frame 65–77 rồi tăng tốc lên khoảng 5,8 px/frame sau frame 77, nên đến giữa đoạn box phụ không còn khớp. Đúng chỗ đó (frame 77) track chính có một keyframe để bắt đổi tốc độ. Kết luận: keyframe đều tiết kiệm (6 so với 15) và vẫn cho IoU trung bình 0,89 khi người đi gần như thẳng, nhưng sai nhiều ở chỗ đổi tốc độ, nên keyframe đặt theo chỗ đổi hướng và đổi tốc độ cho kết quả đáng tin hơn.
+
+![Frame 77: track phụ (keyframe đều) lệch khỏi người so với track chính](images/bonus_b2_frame77.png)
 
 ### B3 — So với tracker có sẵn
 
